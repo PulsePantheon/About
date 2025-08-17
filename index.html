@@ -27,10 +27,9 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            cursor: none;
         }
         
-        /* Custom Cursor */
+        /* Custom Cursor - Hidden by default */
         .cursor {
             width: 20px;
             height: 20px;
@@ -41,8 +40,7 @@
             z-index: 10000;
             transition: all 0.1s ease;
             mix-blend-mode: difference;
-            opacity: 1 !important;
-            visibility: visible !important;
+            display: none;
         }
         
         .cursor-follower {
@@ -54,8 +52,17 @@
             pointer-events: none;
             z-index: 9999;
             transition: all 0.3s ease;
-            opacity: 1 !important;
-            visibility: visible !important;
+            display: none;
+        }
+        
+        /* Enable custom cursor with class */
+        body.custom-cursor .cursor,
+        body.custom-cursor .cursor-follower {
+            display: block;
+        }
+        
+        body.custom-cursor * {
+            cursor: none !important;
         }
         
         body {
@@ -64,7 +71,6 @@
             color: var(--text-primary);
             overflow-x: hidden;
             position: relative;
-            cursor: none;
         }
         
         /* Circuit Board Background */
@@ -89,7 +95,7 @@
             width: 100%;
             height: 100%;
             overflow: hidden;
-            z-index: 1;
+            z-index: 2;
             pointer-events: none;
         }
         
@@ -223,7 +229,6 @@
             font-weight: 500;
             position: relative;
             transition: color 0.3s ease;
-            cursor: none;
         }
         
         .nav-links a:hover {
@@ -353,7 +358,6 @@
             transition: all 0.3s ease;
             text-transform: uppercase;
             letter-spacing: 1px;
-            cursor: none;
         }
         
         .cta-button::before {
@@ -456,7 +460,6 @@
             position: relative;
             overflow: hidden;
             transition: all 0.3s ease;
-            cursor: none;
         }
         
         .hardware-card:hover {
@@ -689,7 +692,6 @@
             border: 1px solid rgba(0, 255, 255, 0.2);
             border-radius: 15px;
             transition: all 0.3s ease;
-            cursor: none;
         }
         
         .contact-item:hover {
@@ -746,7 +748,6 @@
         .copyright a {
             color: var(--primary-cyan);
             text-decoration: none;
-            cursor: none;
         }
         
         /* Modal for Hidden Codes */
@@ -915,6 +916,11 @@
     </style>
 </head>
 <body>
+    <script>
+        // Scroll to top on page load
+        window.scrollTo(0, 0);
+        document.documentElement.scrollTop = 0;
+    </script>
     <!-- Splash Screen -->
     <div class="splash-screen">
         <div class="splash-content">
@@ -1185,13 +1191,19 @@
             cursor.style.borderColor = 'var(--primary-cyan)';
         });
         
-        // Moving Blocks Generation and Animation
-        const blocksContainer = document.getElementById('movingBlocks');
-        if (!blocksContainer) {
-            console.error('Moving blocks container not found!');
-        }
-        const gridSize = 40; // Size of each grid cell
-        const blockCount = 25; // Number of moving blocks
+        // Wait for DOM to be fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Scroll to top
+            window.scrollTo(0, 0);
+            
+            // Moving Blocks Generation and Animation
+            const blocksContainer = document.getElementById('movingBlocks');
+            if (!blocksContainer) {
+                console.error('Moving blocks container not found!');
+                return;
+            }
+            const gridSize = 40; // Size of each grid cell
+            const blockCount = 25; // Number of moving blocks
         const blocks = [];
         let cols = Math.ceil(window.innerWidth / gridSize);
         let rows = Math.ceil(window.innerHeight / gridSize);
@@ -1279,6 +1291,7 @@
                 block.element.style.top = (block.gridY * gridSize) + 'px';
             });
         });
+        }); // End of DOMContentLoaded
         
         // Particle Generation
         const particlesContainer = document.getElementById('particles');
