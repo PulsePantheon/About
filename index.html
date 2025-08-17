@@ -79,6 +79,67 @@
             z-index: -1;
         }
         
+        /* Stochastic Moving Blocks */
+        .moving-blocks-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+            pointer-events: none;
+        }
+        
+        .moving-block {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            opacity: 0.15;
+            transition: all 0.5s ease;
+            animation: block-pulse 4s ease-in-out infinite;
+        }
+        
+        @keyframes block-pulse {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            25% { transform: scale(1.1) rotate(90deg); }
+            50% { transform: scale(0.9) rotate(180deg); }
+            75% { transform: scale(1.05) rotate(270deg); }
+        }
+        
+        .moving-block.type-1 {
+            background: linear-gradient(45deg, var(--primary-cyan), transparent);
+            border: 1px solid var(--primary-cyan);
+        }
+        
+        .moving-block.type-2 {
+            background: linear-gradient(45deg, var(--primary-magenta), transparent);
+            border: 1px solid var(--primary-magenta);
+        }
+        
+        .moving-block.type-3 {
+            background: linear-gradient(45deg, var(--primary-yellow), transparent);
+            border: 1px solid var(--primary-yellow);
+        }
+        
+        .moving-block.type-4 {
+            background: linear-gradient(45deg, var(--accent-green), transparent);
+            border: 1px solid var(--accent-green);
+        }
+        
+        .moving-block.glitch {
+            animation: block-glitch 0.3s ease;
+        }
+        
+        @keyframes block-glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(2px, -2px); }
+            60% { transform: translate(-2px, -2px); }
+            80% { transform: translate(2px, 2px); }
+            100% { transform: translate(0); }
+        }
+        
         /* Animated Particles */
         .particles {
             position: fixed;
@@ -844,6 +905,9 @@
     <!-- Circuit Background -->
     <div class="circuit-bg"></div>
     
+    <!-- Moving Blocks Background -->
+    <div class="moving-blocks-container" id="movingBlocks"></div>
+    
     <!-- Animated Particles -->
     <div class="particles" id="particles"></div>
 
@@ -1088,6 +1152,98 @@
             cursor.style.transform = 'scale(1)';
             follower.style.transform = 'scale(1)';
             cursor.style.borderColor = 'var(--primary-cyan)';
+        });
+        
+        // Moving Blocks Generation and Animation
+        const blocksContainer = document.getElementById('movingBlocks');
+        const gridSize = 40; // Size of each grid cell
+        const blockCount = 25; // Number of moving blocks
+        const blocks = [];
+        
+        // Calculate grid dimensions
+        const cols = Math.ceil(window.innerWidth / gridSize);
+        const rows = Math.ceil(window.innerHeight / gridSize);
+        
+        // Create blocks
+        for (let i = 0; i < blockCount; i++) {
+            const block = document.createElement('div');
+            block.className = `moving-block type-${(i % 4) + 1}`;
+            
+            // Random initial position aligned to grid
+            const gridX = Math.floor(Math.random() * cols) * gridSize;
+            const gridY = Math.floor(Math.random() * rows) * gridSize;
+            
+            block.style.left = gridX + 'px';
+            block.style.top = gridY + 'px';
+            block.style.animationDelay = `${Math.random() * 4}s`;
+            
+            blocksContainer.appendChild(block);
+            blocks.push({
+                element: block,
+                gridX: gridX / gridSize,
+                gridY: gridY / gridSize,
+                type: (i % 4) + 1
+            });
+        }
+        
+        // Stochastic movement and color change
+        function animateBlocks() {
+            blocks.forEach((block, index) => {
+                // Random chance to move or change
+                if (Math.random() < 0.3) { // 30% chance to update
+                    const action = Math.random();
+                    
+                    if (action < 0.5) {
+                        // Move to adjacent grid cell
+                        const directions = [
+                            { dx: 0, dy: -1 }, // up
+                            { dx: 1, dy: 0 },  // right
+                            { dx: 0, dy: 1 },  // down
+                            { dx: -1, dy: 0 }  // left
+                        ];
+                        
+                        const dir = directions[Math.floor(Math.random() * directions.length)];
+                        const newGridX = Math.max(0, Math.min(cols - 1, block.gridX + dir.dx));
+                        const newGridY = Math.max(0, Math.min(rows - 1, block.gridY + dir.dy));
+                        
+                        block.gridX = newGridX;
+                        block.gridY = newGridY;
+                        
+                        block.element.style.left = (newGridX * gridSize) + 'px';
+                        block.element.style.top = (newGridY * gridSize) + 'px';
+                    } else if (action < 0.8) {
+                        // Change color type
+                        const oldType = block.type;
+                        block.type = (Math.floor(Math.random() * 4) + 1);
+                        block.element.classList.remove(`type-${oldType}`);
+                        block.element.classList.add(`type-${block.type}`);
+                    } else {
+                        // Glitch effect
+                        block.element.classList.add('glitch');
+                        setTimeout(() => {
+                            block.element.classList.remove('glitch');
+                        }, 300);
+                    }
+                }
+            });
+        }
+        
+        // Run animation every 500ms
+        setInterval(animateBlocks, 500);
+        
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            const newCols = Math.ceil(window.innerWidth / gridSize);
+            const newRows = Math.ceil(window.innerHeight / gridSize);
+            
+            blocks.forEach(block => {
+                // Adjust positions if they're out of bounds
+                if (block.gridX >= newCols) block.gridX = newCols - 1;
+                if (block.gridY >= newRows) block.gridY = newRows - 1;
+                
+                block.element.style.left = (block.gridX * gridSize) + 'px';
+                block.element.style.top = (block.gridY * gridSize) + 'px';
+            });
         });
         
         // Particle Generation
