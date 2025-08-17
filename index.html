@@ -36,9 +36,11 @@
             border-radius: 50%;
             position: fixed;
             pointer-events: none;
-            z-index: 9999;
+            z-index: 10000;
             transition: all 0.1s ease;
             mix-blend-mode: difference;
+            opacity: 1 !important;
+            visibility: visible !important;
         }
         
         .cursor-follower {
@@ -48,8 +50,10 @@
             border-radius: 50%;
             position: fixed;
             pointer-events: none;
-            z-index: 9998;
+            z-index: 9999;
             transition: all 0.3s ease;
+            opacity: 1 !important;
+            visibility: visible !important;
         }
         
         body {
@@ -1048,7 +1052,7 @@
         <div class="footer-logo">⚡ FERAL LABS LLC ⚡</div>
         <div class="copyright">
             © 2025 Feral Labs LLC. All rights reserved.<br>
-            Design by <a href="#">Mshauri Moore</a> 2025
+            Design by <a href="#">PulsePantheon</a> 2025
         </div>
     </footer>
 
@@ -1075,13 +1079,15 @@
         });
         
         document.addEventListener('mousedown', () => {
-            cursor.style.transform = 'scale(0.8)';
-            follower.style.transform = 'scale(0.8)';
+            cursor.style.transform = 'scale(0.9)';
+            follower.style.transform = 'scale(0.9)';
+            cursor.style.borderColor = 'var(--primary-magenta)';
         });
         
         document.addEventListener('mouseup', () => {
             cursor.style.transform = 'scale(1)';
             follower.style.transform = 'scale(1)';
+            cursor.style.borderColor = 'var(--primary-cyan)';
         });
         
         // Particle Generation
