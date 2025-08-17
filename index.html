@@ -97,10 +97,11 @@
             position: absolute;
             width: 40px;
             height: 40px;
-            opacity: 0.2;
+            opacity: 0.4;
             transition: all 0.5s ease;
             animation: block-pulse 4s ease-in-out infinite;
             backdrop-filter: blur(1px);
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
         }
         
         @keyframes block-pulse {
@@ -1186,13 +1187,16 @@
         
         // Moving Blocks Generation and Animation
         const blocksContainer = document.getElementById('movingBlocks');
+        if (!blocksContainer) {
+            console.error('Moving blocks container not found!');
+        }
         const gridSize = 40; // Size of each grid cell
         const blockCount = 25; // Number of moving blocks
         const blocks = [];
+        let cols = Math.ceil(window.innerWidth / gridSize);
+        let rows = Math.ceil(window.innerHeight / gridSize);
         
-        // Calculate grid dimensions
-        const cols = Math.ceil(window.innerWidth / gridSize);
-        const rows = Math.ceil(window.innerHeight / gridSize);
+        console.log('Initializing moving blocks...', { cols, rows, blockCount });
         
         // Create blocks
         for (let i = 0; i < blockCount; i++) {
@@ -1200,18 +1204,18 @@
             block.className = `moving-block type-${(i % 4) + 1}`;
             
             // Random initial position aligned to grid
-            const gridX = Math.floor(Math.random() * cols) * gridSize;
-            const gridY = Math.floor(Math.random() * rows) * gridSize;
+            const gridX = Math.floor(Math.random() * cols);
+            const gridY = Math.floor(Math.random() * rows);
             
-            block.style.left = gridX + 'px';
-            block.style.top = gridY + 'px';
+            block.style.left = (gridX * gridSize) + 'px';
+            block.style.top = (gridY * gridSize) + 'px';
             block.style.animationDelay = `${Math.random() * 4}s`;
             
             blocksContainer.appendChild(block);
             blocks.push({
                 element: block,
-                gridX: gridX / gridSize,
-                gridY: gridY / gridSize,
+                gridX: gridX,
+                gridY: gridY,
                 type: (i % 4) + 1
             });
         }
@@ -1263,13 +1267,13 @@
         
         // Handle window resize
         window.addEventListener('resize', () => {
-            const newCols = Math.ceil(window.innerWidth / gridSize);
-            const newRows = Math.ceil(window.innerHeight / gridSize);
+            cols = Math.ceil(window.innerWidth / gridSize);
+            rows = Math.ceil(window.innerHeight / gridSize);
             
             blocks.forEach(block => {
                 // Adjust positions if they're out of bounds
-                if (block.gridX >= newCols) block.gridX = newCols - 1;
-                if (block.gridY >= newRows) block.gridY = newRows - 1;
+                if (block.gridX >= cols) block.gridX = cols - 1;
+                if (block.gridY >= rows) block.gridY = rows - 1;
                 
                 block.element.style.left = (block.gridX * gridSize) + 'px';
                 block.element.style.top = (block.gridY * gridSize) + 'px';
