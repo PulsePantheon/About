@@ -103,11 +103,12 @@
             position: absolute;
             width: 40px;
             height: 40px;
-            opacity: 0.4;
+            opacity: 0.7;
             transition: all 0.5s ease;
             animation: block-pulse 4s ease-in-out infinite;
             backdrop-filter: blur(1px);
-            box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.6);
+            border-radius: 4px;
         }
         
         @keyframes block-pulse {
@@ -811,16 +812,17 @@
             bottom: 20px;
             left: 20px;
             font-family: 'Orbitron', monospace;
-            font-size: 0.9em;
-            font-weight: 700;
+            font-size: 1.2em;
+            font-weight: 900;
             color: var(--primary-cyan);
-            opacity: 0.7;
-            z-index: 100;
+            opacity: 0.9;
+            z-index: 5000;
             writing-mode: vertical-rl;
             text-orientation: mixed;
-            letter-spacing: 2px;
+            letter-spacing: 3px;
             transition: all 0.3s ease;
             cursor: pointer;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.8);
         }
         
         .pulse-badge:hover {
@@ -917,9 +919,18 @@
 </head>
 <body>
     <script>
-        // Scroll to top on page load
+        // Force scroll to top on page load
         window.scrollTo(0, 0);
         document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
+        // Hide splash screen after animation completes
+        setTimeout(function() {
+            const splash = document.querySelector('.splash-screen');
+            if (splash) {
+                splash.style.display = 'none';
+            }
+            window.scrollTo(0, 0);
+        }, 5000);
     </script>
     <!-- Splash Screen -->
     <div class="splash-screen">
@@ -1204,11 +1215,11 @@
             }
             const gridSize = 40; // Size of each grid cell
             const blockCount = 25; // Number of moving blocks
-        const blocks = [];
-        let cols = Math.ceil(window.innerWidth / gridSize);
-        let rows = Math.ceil(window.innerHeight / gridSize);
-        
-        console.log('Initializing moving blocks...', { cols, rows, blockCount });
+            const blocks = [];
+            let cols = Math.ceil(window.innerWidth / gridSize);
+            let rows = Math.ceil(window.innerHeight / gridSize);
+            
+            console.log('Initializing moving blocks...', { cols, rows, blockCount });
         
         // Create blocks
         for (let i = 0; i < blockCount; i++) {
@@ -1293,9 +1304,10 @@
         });
         }); // End of DOMContentLoaded
         
-        // Particle Generation
-        const particlesContainer = document.getElementById('particles');
-        const particleCount = 50;
+        // Particle Generation - Move outside DOMContentLoaded to ensure it runs
+        setTimeout(function() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 50;
         
         for (let i = 0; i < particleCount; i++) {
             const particle = document.createElement('div');
@@ -1305,6 +1317,7 @@
             particle.style.animationDuration = (15 + Math.random() * 10) + 's';
             particlesContainer.appendChild(particle);
         }
+        }, 100); // End of setTimeout for particles
         
         // Hidden Code Examples
         const codeExamples = {
